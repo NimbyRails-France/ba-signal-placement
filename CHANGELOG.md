@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.0-alpha.3] - 2026-09-28
+
+- Uses SDK 0.8.0-alpha.5: repeated signals inherit NRF checkbox settings, including unchecked values.
+- Stale panel refreshes no longer trigger observation loss or repeated errors.
+- Requires updating the game SDK together with this mod; visual verification in game remains necessary.
+
 ## [0.1.0-alpha.2] - 2026-09-28
 
 - Reconstruction avec le SDK 0.8.0-alpha.4 et son adaptateur de lecture légère de la session : l'outil au repos ne relit plus tout le réseau à chaque cycle.
