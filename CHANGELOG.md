@@ -2,6 +2,12 @@
 
 ## [0.1.0-alpha.3] - 2026-09-28
 
+- Utilise le SDK 0.8.0-alpha.5 : les signaux répétés héritent des réglages NRF, y compris les cases décochées.
+- Les rafraîchissements d’un ancien panneau ne provoquent plus de perte d’observation ni d’erreurs répétées.
+- Le SDK du jeu doit être mis à jour avec ce mod. La vérification visuelle en jeu reste nécessaire.
+
+English:
+
 - Uses SDK 0.8.0-alpha.5: repeated signals inherit NRF checkbox settings, including unchecked values.
 - Stale panel refreshes no longer trigger observation loss or repeated errors.
 - Requires updating the game SDK together with this mod; visual verification in game remains necessary.
