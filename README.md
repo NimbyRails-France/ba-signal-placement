@@ -7,9 +7,11 @@ Toute l'utilisation se fait dans le jeu : il n'y a plus d'application séparée.
 
 ## État
 
-Le mod natif et son panneau sont implémentés et testés hors jeu.
-Ils restent en développement, sans publication Hub. Le panneau et le parcours
-complet doivent encore être qualifiés dans une partie Windows.
+Le mod est distribué sur le canal **alpha** du Hub et sur le
+[serveur de releases NRF](https://releases.nimbyrails-france.fr/releases/signal-placement/).
+Il nécessite le SDK **0.8.0-alpha.2**. Les tests logiciels couvrent le calcul,
+les actions du panneau et le cycle de vie de la DLL ; la recette complète
+en partie Windows reste distincte.
 
 ## Parcours
 
