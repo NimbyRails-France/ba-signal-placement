@@ -9,7 +9,7 @@ Toute l'utilisation se fait dans le jeu : il n'y a plus d'application séparée.
 
 Le mod est distribué sur le canal **alpha** du Hub et sur le
 [serveur de releases NRF](https://releases.nimbyrails-france.fr/releases/signal-placement/v0.1.0-alpha.1/).
-Il nécessite le SDK **0.8.0-alpha.2**. Les tests logiciels couvrent le calcul,
+Il nécessite le SDK **0.8.0-alpha.3**. Les tests logiciels couvrent le calcul,
 les actions du panneau et le cycle de vie de la DLL ; la recette complète
 en partie Windows reste distincte.
 
@@ -53,7 +53,9 @@ Tous les fichiers Kotlin de production sont dans `src/main/kotlin` :
 - `fr/nimby/placement/tool/PlacementWorkflow.kt` gère le panneau, l'aperçu,
   la confirmation, les tickets, l'annulation et le changement de partie.
 - `src/test/kotlin` vérifie le calcul, le parcours et les callbacks Kotlin/natifs.
-- `assets/mod.txt` et `mod.json` décrivent le paquet installable.
+- `mod.json` définit l'identité et la compatibilité. Le plugin fournit `modInfo`
+  à Kotlin ; `metadata` dans `Entry.kt` fournit l'auteur et la description.
+  Le `mod.txt` du jeu est généré automatiquement au build, jamais maintenu dans assets.
 
 Les offsets, appels du jeu et détails Windows appartiennent au SDK.
 
@@ -80,3 +82,8 @@ session, l'espacement, le ticket et les résultats. Racine par défaut :
 
 Le VPS est réservé à la production. Voir [la validation](docs/validation.md)
 et [le contrat d'intégration](docs/sdk-integration.md) pour les limites actuelles.
+
+Publication GitHub pendant une indisponibilité du VPS : commit de release avec
+le trailer `Release-Runner: github`. Les binaires Windows sont construits et
+testés par GitHub Actions, puis le catalogue public du Hub est actualisé.
+Le SDK épinglé doit être publié avant de lancer cette release.

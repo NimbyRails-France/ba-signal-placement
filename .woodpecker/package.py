@@ -11,7 +11,7 @@ manifest = json.loads(Path('build/gradle/distributions/project-windows-x64.json'
 assert manifest['version'] == plan['version'] and manifest['platform'] == 'windows-x64'
 assert manifest['channel'] == plan['channel']
 repository = os.environ['CI_REPO'].split('/')[-1]
-assert repository in ('signalisationfrancaiserealiste', 'signal-placement') and manifest['id'] == repository
+assert repository in ('signalisationfrancaiserealiste', 'signal-placement', 'time-change') and manifest['id'] == repository
 source = Path('build/gradle/distributions')
 archive = source / manifest['url'].rsplit('/', 1)[-1]
 def digest(path):

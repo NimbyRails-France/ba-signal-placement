@@ -2,6 +2,8 @@
   "fallback": "fr",
   "languages": {
     "fr": {
+      "mod.name": "Signal Placement — Répétition de signaux",
+      "mod.description": "Répétez un signal à intervalles réguliers avec aperçu et confirmation, jusqu'au prochain aiguillage observé.",
       "choose": "Choisir l'espacement puis calculer l'aperçu.",
       "busyOther": "Une pose est en cours sur un autre signal.",
       "retry": "Réessayer",
@@ -44,6 +46,8 @@
       "preview.unknown.many": "{count} signaux à poser.\nDepuis la source : {distances}.\nArrêt : liaison inconnue."
     },
     "en": {
+      "mod.name": "Signal Placement — Repeat signals",
+      "mod.description": "Repeat a signal at regular intervals with a preview and confirmation, up to the next observed junction.",
       "choose": "Choose the spacing, then calculate the preview.",
       "busyOther": "Placement is in progress on another signal.",
       "retry": "Retry",

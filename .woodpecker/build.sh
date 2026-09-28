@@ -10,7 +10,6 @@ export JAVA_HOME="$(python3 .ci/sdk/.woodpecker/toolchain.py java-linux)"
 export PATH="$JAVA_HOME/bin:$PATH"
 python3 .woodpecker/fetch-sdk.py
 export NRF_KOTLIN_HOME="$(python3 .ci/sdk/.woodpecker/toolchain.py kotlin-linux)"
-# SDK alpha.2 validates its intermediate descriptor against the legacy URL.
-# package.py rewrites both public manifests to NRF before hashing/publication.
+# Build against the exact published kit; package.py records mirror-independent hashes.
 sh gradlew packageMod -PnrfSdkDir="$PWD/.ci/sdk-kit" -PnrfWineRunner="$PWD/.ci/sdk/.woodpecker/wine-run.py" -Pkotlin.native.home="$NRF_KOTLIN_HOME" -PreleaseBaseUrl="https://github.com/NimbyRails-France/${CI_REPO##*/}/releases/download/v$(cat VERSION)" --no-daemon --max-workers=2 --console=plain
 python3 .woodpecker/package.py
