@@ -1,0 +1,14 @@
+{
+  "channels": [
+    "alpha",
+    "beta",
+    "stable"
+  ],
+  "default": "stable",
+  "source": "nrf-distribution",
+  "branches": {
+    "main": "stable",
+    "alpha": "alpha",
+    "beta": "beta"
+  }
+}

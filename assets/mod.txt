@@ -1,0 +1,6 @@
+[ModMeta]
+schema=1
+name=Signal Placement
+author=NimbyRails France
+desc=Répétition d'un signal avec aperçu et confirmation, jusqu'au prochain raccordement observé.
+version=0.1.0

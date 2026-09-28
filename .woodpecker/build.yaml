@@ -1,0 +1,17 @@
+# The VPS builds Windows packages; publication requires an explicit release commit.
+labels:
+  pool: general
+concurrency: 1
+when:
+  - event: [push, manual]
+steps:
+  - name: windows-build-and-tests
+    image: univenanne-ci-nimby-release:20260918
+    commands:
+      - sh .woodpecker/build.sh
+  - name: publish-distribution-server
+    image: python:3.12-alpine
+    volumes:
+      - /opt/docker/nimbyrailsfrance-distribution/storage:/distribution
+    commands:
+      - python .woodpecker/distribution.py

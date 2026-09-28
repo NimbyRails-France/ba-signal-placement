@@ -1,0 +1,6 @@
+{
+  "id": "signal-placement", "name": "Signal Placement", "modId": "SignalPlacement",
+  "version": "0.1.0-alpha.1", "module": "SignalPlacementMod", "language": "kotlin-native",
+  "sdkMin": "0.8.0-alpha.2", "sdkMaxExclusive": "0.9.0",
+  "gameSha256": ["fff49ac21720abfc824c2b4f68b862727630eb0db71cfe1f9ea8f685d0db10ae"]
+}

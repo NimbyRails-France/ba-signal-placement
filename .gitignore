@@ -1,0 +1,10 @@
+/.gradle/
+/.kotlin/
+/build/
+/.idea/
+*.iml
+*.log
+/.ci/
+/dist/
+/.release-plan.json
+__pycache__/
