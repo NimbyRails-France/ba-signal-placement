@@ -8,7 +8,7 @@ Toute l'utilisation se fait dans le jeu : il n'y a plus d'application séparée.
 ## État
 
 Le mod est distribué sur le canal **alpha** du Hub et sur le
-[serveur de releases NRF](https://releases.nimbyrails-france.fr/releases/signal-placement/v0.1.0-alpha.1/).
+[release GitHub](https://github.com/NimbyRails-France/signal-placement/releases/tag/v0.1.0-alpha.2).
 Il nécessite le SDK **0.8.0-alpha.3**. Les tests logiciels couvrent le calcul,
 les actions du panneau et le cycle de vie de la DLL ; la recette complète
 en partie Windows reste distincte.

@@ -7,6 +7,8 @@ match=re.fullmatch(r'((?:0|[1-9][0-9]{0,3})\.(?:0|[1-9][0-9]{0,3})\.(?:0|[1-9][0
 assert match,'Use X.Y.Z or X.Y.Z-channel.N (N starts at 1)'
 channel=match.group(2) or 'stable'
 assert channel in policy['channels'],'Channel is not enabled for this project'
+if (root/'mod.json').exists():
+ assert json.loads((root/'mod.json').read_text(encoding='utf-8'))['version']==version,'mod.json differs from VERSION'
 if (root/'CMakeLists.txt').exists():
  cmake=re.search(r'project\([^)]*\bVERSION\s+(\d+\.\d+\.\d+)',(root/'CMakeLists.txt').read_text(encoding='utf-8'),re.I)
  assert cmake and cmake.group(1)==match.group(1),'CMake must match the numeric part of VERSION'

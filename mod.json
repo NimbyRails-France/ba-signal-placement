@@ -2,7 +2,7 @@
   "id": "signal-placement",
   "name": "Signal Placement",
   "modId": "SignalPlacement",
-  "version": "0.1.0-alpha.1",
+  "version": "0.1.0-alpha.2",
   "module": "SignalPlacementMod",
   "language": "kotlin-native",
   "sdkMin": "0.8.0-alpha.3",
