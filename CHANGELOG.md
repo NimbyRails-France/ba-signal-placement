@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.0-alpha.2] - 2026-09-28
+
+- Reconstruction avec le SDK 0.8.0-alpha.4 et son adaptateur de lecture légère de la session : l'outil au repos ne relit plus tout le réseau à chaque cycle.
+- Réduction de la contention avec les observations de signalisation, susceptible de retarder l'ouverture des carrés à l'approche des trains.
+- Le réseau complet reste lu à la demande pour calculer les emplacements des signaux.
+
 ## [0.1.0-alpha.1] - 2026-09-28
 
 - Répéter un signal depuis son panneau lorsque le mod de signalisation propose le service facultatif.
