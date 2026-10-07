@@ -3,6 +3,31 @@ package fr.nimby.placement
 import kotlin.test.*
 
 class PlacementPlannerTest {
+    @Test fun plannerRequestsOnlyItsBoundedRouteAndSignals() {
+        val tracks = listOf(Track(1, 150.0, b=Connection.Join(2, End.A)),
+            Track(2, 400.0, a=Connection.Join(1, End.B), b=Connection.EndOfTrack))
+        val trackReads = mutableListOf<Long>()
+        val signalReads = mutableListOf<Long>()
+        val network = object : PlacementNetwork {
+            override val session = "world"
+            override val revision = "revision"
+            override fun track(id: Long): Track? { trackReads += id; return tracks.single { it.id == id } }
+            override fun signal(id: Long): Signal? {
+                assertEquals(10, id)
+                return Signal(id, 1, 0.0, Direction.A_TO_B)
+            }
+            override fun forEachSignalOnTrack(trackId: Long, action: (Signal) -> Unit) {
+                signalReads += trackId
+                if (trackId == 2L) action(Signal(20, 2, 50.0, Direction.B_TO_A))
+            }
+        }
+        val result = PlacementPlanner.preview(network, PlacementRequest(10, 100.0))
+        assertEquals(listOf(1L, 2L), trackReads)
+        assertEquals(listOf(1L, 2L), signalReads)
+        assertEquals(listOf(100.0, 300.0, 400.0, 500.0), result.placements.map { it.distanceFromSourceM })
+        assertEquals(listOf(20L), result.skipped.single().existingSignalIds)
+    }
+
     private fun snapshot(tracks: List<Track>, source: Signal = Signal(10, 1, 0.0, Direction.A_TO_B), others: List<Signal> = emptyList()) =
         NetworkSnapshot("save-session", "topology-1", tracks, listOf(source) + others)
     private fun plan(network: NetworkSnapshot, spacing: Double = 100.0, clearance: Double = 0.0, candidates: Int = 1000, tracks: Int = 4096) =
@@ -153,5 +178,26 @@ class PlacementPlannerTest {
         assertEquals("save-session", result.session)
         assertEquals("topology-1", result.revision)
         assertEquals(10L, result.sourceSignal)
+    }
+    @Test fun unorderedAndRepeatedJunctionsChooseTheNearestBoundaryInEitherDirection() {
+        val track = Track(1, 900.0, junctionsM = listOf(800.0, 200.0, 650.0, 200.0))
+        val forward = plan(snapshot(listOf(track), Signal(10, 1, 300.0, Direction.A_TO_B)))
+        val reverse = plan(snapshot(listOf(track), Signal(10, 1, 600.0, Direction.B_TO_A)))
+        assertEquals(350.0, forward.coveredDistanceM)
+        assertEquals(400.0, reverse.coveredDistanceM)
+        assertEquals(StopReason.JUNCTION, forward.stop)
+        assertEquals(StopReason.JUNCTION, reverse.stop)
+    }
+    @Test fun unrelatedLargeNetworkDoesNotChangePreviewOrItsOwnedSignalIndexes() {
+        val signals = mutableListOf(Signal(10, 1, 0.0, Direction.A_TO_B), Signal(11, 1, 300.0, Direction.B_TO_A))
+        val tracks = listOf(Track(1, 900.0)) + (2L..20_000L).map { Track(it, 900.0) }
+        signals += (2L..20_000L).map { Signal(it + 100, it, 100.0, Direction.A_TO_B) }
+        val network = NetworkSnapshot("world", "revision", tracks, signals)
+        signals.clear()
+        repeat(20) {
+            val result = plan(network)
+            assertEquals(listOf(11L), result.skipped.single().existingSignalIds)
+            assertEquals(listOf(100.0, 200.0, 400.0, 500.0, 600.0, 700.0, 800.0), result.placements.map { it.distanceFromSourceM })
+        }
     }
 }

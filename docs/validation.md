@@ -1,11 +1,11 @@
-# Validation du mod Signal Placement
+# Validation du mod BA Signal Placement
 
 La validation actuelle porte sur le mod Kotlin/Native Windows. Les anciennes
 recettes de la fenêtre Swing ne valident pas le panneau intégré au jeu.
 
 ## Tests locaux automatisés
 
-Depuis la racine de Signal Placement, avec JDK 21 et `nrfSdkDir` configuré :
+Depuis la racine de BA Signal Placement, avec JDK 21 et `nrfSdkDir` configuré :
 
 ```powershell
 .\gradlew.bat windowsTest verifyNativeMod
@@ -17,6 +17,11 @@ Depuis la racine de Signal Placement, avec JDK 21 et `nrfSdkDir` configuré :
   réseau ou de partie, refus, résultat partiel et ticket incertain.
 - `ToolBridgeTest` : transmission des actions et du panneau à travers les
   callbacks Kotlin/natifs, actualisation et rejet des clics périmés.
+- `PlacementPerformanceTest` : renouvellements sans capture ni reconstruction
+  des contrôles, réaction immédiate à une nouvelle distance, invariance du
+  résultat avec 20 000 voies et signaux sans rapport avec le parcours. Les
+  durées affichées servent au diagnostic ; les assertions portent sur le
+  travail effectué et le résultat, sans seuil dépendant de la machine.
 - `verifyNativeMod` : chargement de la DLL, exports, démarrage, arrêt et rechargement.
 
 Ces tests utilisent des observations contrôlées et un hôte de chargement local.
@@ -28,7 +33,7 @@ production ; l'ancien workflow de l'application externe a été retiré.
 
 Elle reste à effectuer avec le SDK et le mod issus du même build :
 
-1. Charger Signal Placement avec un mod de signaux compatible et vérifier le
+1. Charger BA Signal Placement avec un mod de signaux compatible et vérifier le
    bouton **Répéter ce signal**. Vérifier aussi le mod de signaux sans cet outil.
 2. Vérifier les distances sur une droite puis une courbe, dans les deux sens.
 3. Vérifier les arrêts aux aiguilles en pointe et en talon, y compris aux raccords.

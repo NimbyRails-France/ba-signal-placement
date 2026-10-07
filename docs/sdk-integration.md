@@ -9,11 +9,23 @@ Le SDK montre le bouton seulement si le service observe la même partie.
 
 - Le SDK fournit le contexte, les observations du réseau, les boutons, les
   journaux et le pont expérimental de construction Windows.
-- Le noyau de Signal Placement calcule les positions selon l'espacement, les
+- Le noyau de BA Signal Placement calcule les positions selon l'espacement, les
   métriques disponibles, les connexions et les jonctions observées.
 - `PlacementWorkflow` gère l'aperçu, la confirmation, le ticket et l'annulation.
 - `NativeNetwork` adapte les données génériques au noyau géométrique de pose.
   Il ne contient aucun offset du jeu ni règle de signalisation nationale.
+
+Le planificateur lit une vue indexée du réseau. L'adaptateur conserve la
+topologie validée du SDK et convertit seulement les voies et les signaux du
+parcours demandé. Son index de signaux est construit une fois par capture :
+parcourir plusieurs voies ne rescane pas tous les signaux de la carte.
+Les observations ne sont pas réutilisées entre deux calculs : la confirmation
+repart toujours d'une capture obtenue après la préparation du ticket.
+
+Un tick sans action ne recapture pas le réseau. Il renouvelle le dessin et le
+panneau avec leurs données déjà calculées ; les contrôles sont reconstruits
+seulement si leur état affiché change. Une nouvelle distance recalcule l'aperçu
+immédiatement, tandis qu'une valeur identique conserve l'approbation courante.
 
 Le panneau permet de saisir l'espacement, afficher ou masquer les signaux
 temporaires sur la carte, confirmer la pose et annuler la série.
@@ -33,7 +45,7 @@ confirmation. Une commande incertaine ou Pending conserve son ticket : le mod
 interroge son état sans renvoyer une création. Un changement de partie invalide
 l'aperçu. Les résultats partiels et refusés sont affichés et journalisés.
 
-Le panneau du mod est l'unique interface de Signal Placement. Les fonctions du
+Le panneau du mod est l'unique interface de BA Signal Placement. Les fonctions du
 pont de construction restent expérimentales ; les essais unitaires ne qualifient
 pas le jeu réel.
 

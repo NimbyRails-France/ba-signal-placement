@@ -44,11 +44,11 @@ object PlacementPlanner {
         fun contains(offset: Double) = offset in minOf(from, to)..maxOf(from, to)
     }
 
-    fun preview(network: NetworkSnapshot, request: PlacementRequest): PlacementPreview {
-        val source = requireNotNull(network.signals.find { it.id == request.sourceSignal }) { "Signal source absent" }
+    fun preview(network: PlacementNetwork, request: PlacementRequest): PlacementPreview {
+        val source = requireNotNull(network.signal(request.sourceSignal)) { "Signal source absent" }
         val sections = mutableListOf<Section>()
         val visited = mutableSetOf<Long>()
-        var track = network.tracks.getValue(source.trackId)
+        var track = requireNotNull(network.track(source.trackId)) { "Voie du signal absente" }
         var from = source.offsetM
         var direction = source.direction
         var covered = 0.0
@@ -60,8 +60,9 @@ object PlacementPlanner {
             if (track.id in visited) { stop = StopReason.CYCLE; break }
             if (visited.size == request.maxTracks) { stop = StopReason.TRACK_LIMIT; break }
             visited.add(track.id)
-            val junction = track.junctionsM.filter { (it - from) * direction.sign >= 0 }
-                .minByOrNull { abs(it - from) }
+            val found = track.junctionsM.binarySearch(from)
+            val insertion = if (found >= 0) found else -found - 1
+            val junction = track.junctionsM.getOrNull(if (found >= 0 || direction == Direction.A_TO_B) insertion else insertion - 1)
             val exit = if (direction == Direction.A_TO_B) End.B else End.A
             val end = junction ?: if (exit == End.B) track.lengthM else 0.0
             val length = abs(end - from)
@@ -79,7 +80,7 @@ object PlacementPlanner {
                 Connection.EndOfTrack -> { stop = StopReason.END_OF_TRACK; break }
                 Connection.Unknown -> { stop = StopReason.UNKNOWN_CONNECTION; break }
                 is Connection.Join -> {
-                    val next = network.tracks[connection.trackId]
+                    val next = network.track(connection.trackId)
                     if (next == null) { stop = StopReason.UNKNOWN_CONNECTION; break }
                     // A reciprocal endpoint avoids following a one-sided or stale link.
                     // Junction classification takes precedence over reciprocal validation.
@@ -97,12 +98,11 @@ object PlacementPlanner {
 
         // Project all observed signals, of either direction, onto the traced route.
         // This also detects collisions across a seam between two track records.
-        val signalsByTrack = network.signals.groupBy { it.trackId }
-        val occupied = sections.flatMap { section ->
-            signalsByTrack[section.track.id].orEmpty().filter { section.contains(it.offsetM) }.map {
-                it.id to section.startM + abs(it.offsetM - section.from)
-            }
-        }.sortedBy { it.second }
+        val occupied = mutableListOf<Pair<Long, Double>>()
+        for (section in sections) network.forEachSignalOnTrack(section.track.id) { signal ->
+            if (section.contains(signal.offsetM)) occupied.add(signal.id to section.startM + abs(signal.offsetM - section.from))
+        }
+        occupied.sortBy { it.second }
         val placements = mutableListOf<Candidate>()
         val skipped = mutableListOf<SkippedCandidate>()
         var sectionIndex = 0
@@ -118,10 +118,13 @@ object PlacementPlanner {
             val offset = (section.from + section.direction.sign * (distance - section.startM)).coerceIn(0.0, section.track.lengthM)
             val candidate = Candidate(section.track.id, offset, section.direction, distance)
             while (occupiedIndex < occupied.size && occupied[occupiedIndex].second < distance - request.clearanceM) occupiedIndex++
-            val nearby = mutableListOf<Long>()
-            var cursor = occupiedIndex
-            while (cursor < occupied.size && occupied[cursor].second <= distance + request.clearanceM) nearby += occupied[cursor++].first
-            if (nearby.isEmpty()) placements += candidate else skipped += SkippedCandidate(candidate, nearby)
+            if (occupiedIndex == occupied.size || occupied[occupiedIndex].second > distance + request.clearanceM) placements += candidate
+            else {
+                val nearby = mutableListOf<Long>()
+                var cursor = occupiedIndex
+                while (cursor < occupied.size && occupied[cursor].second <= distance + request.clearanceM) nearby += occupied[cursor++].first
+                skipped += SkippedCandidate(candidate, nearby)
+            }
         }
         return PlacementPreview(network.session, network.revision, source.id, placements.toList(), skipped.toList(),
             stop, covered)

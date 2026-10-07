@@ -2,7 +2,7 @@
   "fallback": "fr",
   "languages": {
     "fr": {
-      "mod.name": "Signal Placement — Répétition de signaux",
+      "mod.name": "BA Signal Placement",
       "mod.description": "Répétez un signal à intervalles réguliers avec aperçu et confirmation, jusqu'au prochain aiguillage observé.",
       "choose": "Choisir l'espacement puis calculer l'aperçu.",
       "busyOther": "Une pose est en cours sur un autre signal.",
@@ -23,7 +23,9 @@
       "spacing": "Espacement : {spacing} m.\nCalculer l’aperçu avant de poser.",
       "failed": "Opération refusée. Consulter le journal du mod.",
       "previewUnavailable": "Aperçu indisponible. Consulter le journal du mod.",
-      "applied": "{count} signaux posés.",
+      "previewWaiting": "Aperçu en attente…",
+      "applied.one": "{count} signal posé.",
+      "applied.many": "{count} signaux posés.",
       "partial": "Pose partielle : {count} signaux. Consulter le journal.",
       "rejected": "Opération refusée (code {reason}). Recalculer l’aperçu.",
       "preview.junction.empty": "Aucun emplacement disponible.\n{skipped} emplacements occupés.\nArrêt : aiguille.",
@@ -46,7 +48,7 @@
       "preview.unknown.many": "{count} signaux à poser.\nDepuis la source : {distances}.\nArrêt : liaison inconnue."
     },
     "en": {
-      "mod.name": "Signal Placement — Repeat signals",
+      "mod.name": "BA Signal Placement",
       "mod.description": "Repeat a signal at regular intervals with a preview and confirmation, up to the next observed junction.",
       "choose": "Choose the spacing, then calculate the preview.",
       "busyOther": "Placement is in progress on another signal.",
@@ -67,7 +69,9 @@
       "spacing": "Spacing: {spacing} m.\nCalculate a preview before placing signals.",
       "failed": "Operation rejected. See the mod log for details.",
       "previewUnavailable": "Preview unavailable. See the mod log for details.",
-      "applied": "{count} signals placed.",
+      "previewWaiting": "Preview pending…",
+      "applied.one": "{count} signal placed.",
+      "applied.many": "{count} signals placed.",
       "partial": "Partial placement: {count} signals. See the log.",
       "rejected": "Operation rejected (code {reason}). Recalculate the preview.",
       "preview.junction.empty": "No available positions.\n{skipped} occupied positions.\nStopped at: junction.",

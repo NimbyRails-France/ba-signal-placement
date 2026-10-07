@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.1.0] - 2026-10-08
+
+- Première version stable sous le nom **BA Signal Placement**.
+- Rend le calcul des emplacements plus efficace sur les grandes cartes.
+- Conserve l'aperçu lorsque l'espacement reste identique et le met à jour dès que la valeur change.
+- Améliore la reprise après une attente temporaire : la pose reste désactivée tant que l'aperçu n'est pas prêt.
+- Renforce la protection contre les poses en double et les confirmations tardives après la fermeture ou le masquage de l'aperçu.
+
+Prérequis : **SDK 0.9.0-alpha.1** (alpha) ou plus récent, inférieur à **0.10.0**.
+
+English:
+
+- First stable release under the name **BA Signal Placement**.
+- Makes placement calculations more efficient on large maps.
+- Preserves the preview when spacing is unchanged and updates it as soon as the value changes.
+- Improves recovery from temporary delays: placement remains disabled until the preview is ready.
+- Strengthens protection against duplicate placement and late confirmations after closing or hiding the preview.
+
+Requires **SDK 0.9.0-alpha.1** (alpha) or later, below **0.10.0**.
+
 ## [0.1.0-alpha.3] - 2026-09-28
 
 - Utilise le SDK 0.8.0-alpha.5 : les signaux répétés héritent des réglages NRF, y compris les cases décochées.

@@ -5,6 +5,7 @@ import kotlinx.cinterop.*
 import kotlin.test.*
 import nimby.internal.*
 import nimby.ToolContext
+import nimby.ToolOperationException
 
 private var panels=0
 private var spacing=0L
@@ -16,6 +17,41 @@ private fun callback(op: Int,integers: CPointer<LongVar>?,count: Int,numbers: CP
     spacing=integers[9];panels++;return 0
 }
 class ToolBridgeTest {
+    @Test fun busyCleanupPanelAndReadPreserveStatusWithoutDiagnosticOrAutomaticRetry() {
+        val request=nimby.SignalActionRequest(1,0x8000000000001L,"preview","repeat.v1","world",1,10,"repeat")
+        val operations=listOf<Pair<Int,(ToolContext)->Unit>>(
+            9 to { it.clearSignalPreview() },
+            6 to { it.showPanel(request,"",listOf(nimby.ToolButton("preview","Preview"))) },
+            8 to { it.showPanel(request,"",emptyList(),listOf(nimby.ToolNumberInput("spacing","Spacing",1000,3,100000))) },
+            1 to { it.network() },
+            5 to { it.createSignals(51,request.signalId,listOf(nimby.SignalPosition(0x1000000000001L,.5,1))) },
+        )
+        for((expectedOp,operation) in operations) {
+            var calls=0;var diagnostics=0
+            ToolAccess.withContext("world",1,{op,_,_,_->
+                if(op==7){diagnostics++;0}else{assertEquals(expectedOp,op);calls++;12}
+            }) { context ->
+                val failure=assertFailsWith<ToolOperationException> { operation(context) }
+                assertEquals(12,failure.status);assertTrue(failure.isBusy)
+            }
+            assertEquals(1,calls);assertEquals(0,diagnostics)
+        }
+    }
+    @Test fun previewStatusIsTypedAndBusyDoesNotGenerateRepeatedDiagnostics() {
+        for(status in listOf(9,12,8)) {
+            var calls=0;var diagnostics=0
+            ToolAccess.withContext("world",1,{op,_,_,_->
+                if(op==7){diagnostics++;0}else{assertEquals(9,op);calls++;status}
+            }) { context ->
+                val request=nimby.SignalActionRequest(1,0x8000000000001L,"preview","repeat.v1","world",1,10,"repeat")
+                val failure=assertFailsWith<ToolOperationException> {
+                    context.showSignalPreview(request,listOf(nimby.SignalPosition(0x1000000000001L,.5,1)))
+                }
+                assertEquals(status,failure.status);assertEquals(status==12,failure.isBusy)
+            }
+            assertEquals(1,calls);assertEquals(if(status==12)0 else 1,diagnostics)
+        }
+    }
     @Test fun nativeCallbackRoundTripAndExpiredContext() {
         assertEquals(3,version());assertEquals(1,modKind());assertEquals(1,serviceCount())
         assertEquals(0,toolStop());panels=0

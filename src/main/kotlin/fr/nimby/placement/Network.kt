@@ -34,32 +34,67 @@ data class Track(
 /** L'identité du modèle reste celle du signal source, sans interpréter son aspect. */
 data class Signal(val id: Long, val trackId: Long, val offsetM: Double, val direction: Direction)
 
+/** Owned, indexed observations. The planner requests only its bounded route;
+ * adapters need not rebuild the unrelated parts of a large map. */
+interface PlacementNetwork {
+    val session: String
+    val revision: String
+    fun track(id: Long): Track?
+    fun signal(id: Long): Signal?
+    fun forEachSignalOnTrack(trackId: Long, action: (Signal) -> Unit)
+}
+
 /**
- * Copie des observations nécessaires au calcul, préparée par NativeNetwork.
+ * Copie validée des observations nécessaires au calcul, indépendante du SDK.
  * PlacementWorkflow contrôle de nouveau la session et recalcule depuis une
  * nouvelle capture avant de poser. Cette copie ne rend pas la lecture du jeu
  * atomique ; une heure de capture ne prouve pas une topologie inchangée.
  */
 class NetworkSnapshot(
-    val session: String,
-    val revision: String,
+    override val session: String,
+    override val revision: String,
     tracks: List<Track>,
     signals: List<Signal>,
-) {
-    internal val tracks = tracks.map { it.copy(junctionsM = it.junctionsM.toList()) }.associateBy { it.id }
-    internal val signals = signals.toList()
+) : PlacementNetwork {
+    private val tracks = LinkedHashMap<Long, Track>(tracks.size)
+    private val signalsById = HashMap<Long, Signal>(signals.size)
+    // Most tracks carry zero or one signal: retain the value directly and only
+    // allocate a bucket for tracks that actually need several entries.
+    private val signalsByTrack = HashMap<Long, Any>(minOf(signals.size, tracks.size))
+
+    override fun track(id: Long): Track? = tracks[id]
+    override fun signal(id: Long): Signal? = signalsById[id]
+    override fun forEachSignalOnTrack(trackId: Long, action: (Signal) -> Unit) {
+        when (val entry = signalsByTrack[trackId]) {
+            null -> Unit
+            is Signal -> action(entry)
+            else -> {
+                @Suppress("UNCHECKED_CAST")
+                for (signal in entry as List<Signal>) action(signal)
+            }
+        }
+    }
 
     init {
         require(session.isNotBlank() && revision.isNotBlank())
-        require(this.tracks.size == tracks.size && tracks.none { it.id == 0L }) { "Voies dupliquées ou sans identité" }
         for (track in tracks) {
+            require(track.id != 0L && track.id !in this.tracks) { "Voies dupliquées ou sans identité" }
             require(track.lengthM.isFinite() && track.lengthM > 0) { "Longueur curviligne indisponible" }
             require(track.junctionsM.all { it.isFinite() && it in 0.0..track.lengthM })
+            this.tracks[track.id] = track.copy(junctionsM = track.junctionsM.sorted())
         }
-        require(signals.map { it.id }.toSet().size == signals.size && signals.none { it.id == 0L })
         for (signal in signals) {
+            require(signal.id != 0L && signalsById.put(signal.id, signal) == null)
             val track = requireNotNull(this.tracks[signal.trackId]) { "Voie du signal absente" }
             require(signal.offsetM.isFinite() && signal.offsetM in 0.0..track.lengthM)
+            when (val existing = signalsByTrack[signal.trackId]) {
+                null -> signalsByTrack[signal.trackId] = signal
+                is Signal -> signalsByTrack[signal.trackId] = mutableListOf(existing, signal)
+                else -> {
+                    @Suppress("UNCHECKED_CAST")
+                    (existing as MutableList<Signal>).add(signal)
+                }
+            }
         }
     }
 }

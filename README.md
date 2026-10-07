@@ -1,15 +1,16 @@
-# Signal Placement
+# BA Signal Placement
 
 Mod outil Kotlin/Native pour Windows, indépendant des mods de signalisation.
-Un signal compatible propose **Répéter ce signal** lorsque Signal Placement est
+Un signal compatible propose **Répéter ce signal** lorsque BA Signal Placement est
 chargé. Le mod fournisseur de signaux fonctionne normalement sans cet outil.
 Toute l'utilisation se fait dans le jeu : il n'y a plus d'application séparée.
 
 ## État
 
-Le mod est distribué sur le canal **alpha** du Hub et sur le
-[release GitHub](https://github.com/NimbyRails-France/signal-placement/releases/tag/v0.1.0-alpha.3).
-Il nécessite le SDK **0.8.0-alpha.3**. Les tests logiciels couvrent le calcul,
+La version **0.1.0** est préparée pour le canal **stable** ; sa publication reste
+à effectuer. Le statut de développement du mod est **stable**.
+Il nécessite le SDK **0.9.0-alpha.1** au minimum, et une version inférieure à
+**0.10.0**. Ce prérequis reste une version alpha du SDK. Les tests logiciels couvrent le calcul,
 les actions du panneau et le cycle de vie de la DLL ; la recette complète
 en partie Windows reste distincte.
 
@@ -72,9 +73,10 @@ Dans le workspace IntelliJ, utiliser **NRF - Pose de signaux - Compiler le mod**
 et **NRF - Pose de signaux - Tester le mod**. Ces configurations préparent le kit SDK
 local puis compilent le mod ; elles ne lancent pas le jeu.
 
-Le paquet se trouve dans `build/gradle/mod/release`. Le SDK et ses ponts de
-construction/UI doivent correspondre au même build. Le kit alpha.1 déjà publié
-précède cette API. Les commandes ci-dessus n'installent rien dans une partie.
+Le paquet se trouve dans `build/gradle/mod/release`. Utiliser le kit SDK
+**0.9.0-alpha.1** correspondant au runtime sélectionné dans le Hub ; les ponts de
+construction/UI doivent appartenir au même build. Les commandes ci-dessus
+n'installent rien dans une partie.
 
 Le journal natif commun `logs/mods` reçoit les actions, le signal source, la
 session, l'espacement, le ticket et les résultats. Racine par défaut :
